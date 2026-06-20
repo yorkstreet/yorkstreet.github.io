@@ -4,8 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Presentations — Digital Signage</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📽️</text></svg>">
 <link rel="stylesheet" href="../css/style.css">
 <link rel="stylesheet" href="../css/admin.css">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://*.firebaseio.com https://*.googleapis.com https://www.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; frame-src *; connect-src 'self' https://*.firebaseio.com https://*.googleapis.com https://*.gstatic.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com; img-src 'self' data:;">
 </head>
 <body>
 <div class="admin-layout">
@@ -28,7 +30,7 @@
 
     <div class="card">
       <div class="card-header">Create New Presentation</div>
-      <form id="create-pres-form" onsubmit="createPresentation(event)">
+      <form id="create-pres-form">
         <div class="form-group">
           <label for="new-pres-name">Presentation Name</label>
           <input type="text" id="new-pres-name" placeholder="e.g. Lobby Slideshow" required>
@@ -59,9 +61,9 @@
           <label>Slides</label>
           <div id="edit-slides-list" class="slide-list"></div>
           <div class="add-slide-bar">
-            <button type="button" class="btn btn-outline btn-sm" onclick="addImageSlide()">+ Add Image</button>
-            <button type="button" class="btn btn-outline btn-sm" onclick="addVideoSlide()">+ Add Video</button>
-            <button type="button" class="btn btn-outline btn-sm" onclick="addEmbedSlide()">+ Add Embed</button>
+            <button type="button" class="btn btn-outline btn-sm" id="btn-add-image">+ Add Image</button>
+            <button type="button" class="btn btn-outline btn-sm" id="btn-add-video">+ Add Video</button>
+            <button type="button" class="btn btn-outline btn-sm" id="btn-add-embed">+ Add Embed</button>
           </div>
         </div>
         <div class="form-group">
@@ -70,9 +72,9 @@
           </label>
         </div>
         <div class="form-actions">
-          <button type="button" class="btn btn-primary" onclick="savePresentation()">Save</button>
-          <button type="button" class="btn btn-outline" onclick="closeEditModal()">Cancel</button>
-          <button type="button" class="btn btn-danger" onclick="deletePresentation()" style="margin-left:auto;">Delete</button>
+          <button type="button" class="btn btn-primary" id="btn-save-pres">Save</button>
+          <button type="button" class="btn btn-outline" id="btn-cancel-edit">Cancel</button>
+          <button type="button" class="btn btn-danger" id="btn-delete-pres" style="margin-left:auto;">Delete</button>
         </div>
       </div>
     </div>
@@ -88,9 +90,46 @@
 <script src="../js/admin-auth.js"></script>
 <script src="../js/admin-presentations.js"></script>
 <script>
-requireAdminAuth();
-setupLogoutButton();
-document.addEventListener('DOMContentLoaded', loadPresentations);
+document.addEventListener('DOMContentLoaded', function() {
+  requireAdminAuth();
+  setupLogoutButton();
+  loadPresentations();
+  
+  var createForm = document.getElementById('create-pres-form');
+  if (createForm) {
+    createForm.addEventListener('submit', createPresentation);
+  }
+  
+  var btnAddImage = document.getElementById('btn-add-image');
+  if (btnAddImage) {
+    btnAddImage.addEventListener('click', addImageSlide);
+  }
+  
+  var btnAddVideo = document.getElementById('btn-add-video');
+  if (btnAddVideo) {
+    btnAddVideo.addEventListener('click', addVideoSlide);
+  }
+  
+  var btnAddEmbed = document.getElementById('btn-add-embed');
+  if (btnAddEmbed) {
+    btnAddEmbed.addEventListener('click', addEmbedSlide);
+  }
+  
+  var btnSavePres = document.getElementById('btn-save-pres');
+  if (btnSavePres) {
+    btnSavePres.addEventListener('click', savePresentation);
+  }
+  
+  var btnCancelEdit = document.getElementById('btn-cancel-edit');
+  if (btnCancelEdit) {
+    btnCancelEdit.addEventListener('click', closeEditModal);
+  }
+  
+  var btnDeletePres = document.getElementById('btn-delete-pres');
+  if (btnDeletePres) {
+    btnDeletePres.addEventListener('click', deletePresentation);
+  }
+});
 </script>
 </body>
 </html>
