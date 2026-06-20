@@ -4,7 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Initialize System — Digital Signage</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚙️</text></svg>">
 <link rel="stylesheet" href="css/style.css">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://*.firebaseio.com https://*.googleapis.com https://www.gstatic.com; style-src 'self' 'unsafe-inline'; frame-src *; connect-src 'self' https://*.firebaseio.com https://*.googleapis.com https://*.gstatic.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com; img-src 'self' data:;">
 <style>
   .init-container {
     max-width: 500px;
@@ -73,7 +75,7 @@
         <input type="password" id="admin-confirm" placeholder="Re-enter password" autocomplete="new-password">
       </div>
       <div class="form-actions">
-        <button class="btn btn-primary" id="btn-setup" onclick="runSetup()">Initialize System</button>
+        <button class="btn btn-primary" id="btn-setup">Initialize System</button>
       </div>
     </div>
     <div id="setup-done" style="display:none">
@@ -86,6 +88,62 @@
     </div>
   </div>
 </div>
+
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+<script src="js/config.js"></script>
+<script src="js/firebase-init.js"></script>
+<script src="js/app.js"></script>
+<script>
+let setupInProgress = false;
+
+async function sha256(str) {
+  const buf = new TextEncoder().encode(str);
+  const hash = await crypto.subtle.digest('SHA-256', buf);
+  return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+function setStatus(msg, type) {
+  const area = document.getElementById('status-area');
+  area.innerHTML = '<div class="alert alert-' + type + '">' + escapeHtml(msg) + '</div>';
+}
+
+function showLoading() {
+  document.getElementById('loading-area').style.display = 'block';
+  document.getElementById('setup-form').style.display = 'none';
+  document.getElementById('setup-done').style.display = 'none';
+  document.getElementById('status-area').innerHTML = '';
+}
+
+async function checkSetup() {
+  showLoading();
+  try {
+    const snapshot = await firestore.collection('admin').doc('credentials').get();
+    if (snapshot.exists) {
+      document.getElementById('loading-area').style.display = 'none';
+      document.getElementById('setup-done').style.display = 'block';
+    } else {
+      document.getElementById('loading-area').style.display = 'none';
+      document.getElementById('setup-form').style.display = 'block';
+    }
+  } catch (err) {
+    document.getElementById('loading-area').style.display = 'none';
+    document.getElementById('setup-form').style.display = 'block';
+    setStatus('Cannot connect to Firebase. Check your config.', 'error');
+  }
+}
+
+async function runSetup() {
+  if (setupInProgress) return;
+  const email = document.getElementById('admin-email').value.trim();
+  const password = document.getElementById('admin-password').value;
+  const confirm = document.getElementById('admin-confirm').value;
+
+  if (!email) { setStatus('Enter an email address.', 'error'); return; }
+  if (password.length < 8) { setStatus('Password must be at least 8 characters.', 'error'); return; }
+  if (password !== confirm) { setStatus('Passwords do not match.', 'error'); return; }
 
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
@@ -195,7 +253,13 @@ async function runSetup() {
   }
 }
 
-checkSetup();
+document.addEventListener('DOMContentLoaded', function() {
+  var setupBtn = document.getElementById('btn-setup');
+  if (setupBtn) {
+    setupBtn.addEventListener('click', runSetup);
+  }
+  checkSetup();
+});
 </script>
 </body>
 </html>
