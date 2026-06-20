@@ -4,9 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dashboard — Digital Signage</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📺</text></svg>">
 <link rel="stylesheet" href="../css/style.css">
 <link rel="stylesheet" href="../css/admin.css">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://*.firebaseio.com https://*.googleapis.com https://*.cloudinary.com https://www.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; frame-src *; connect-src 'self' https://*.firebaseio.com https://*.googleapis.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com; img-src 'self' https://*.cloudinary.com data:;">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://*.firebaseio.com https://*.googleapis.com https://*.cloudinary.com https://www.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; frame-src *; connect-src 'self' wss://*.firebaseio.com https://*.firebaseio.com https://*.googleapis.com https://*.gstatic.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com; img-src 'self' https://*.cloudinary.com data:;">
 </head>
 <body>
 <div class="admin-layout">
@@ -67,7 +68,7 @@
     <div class="card">
       <div class="card-header">Send Notification</div>
       <div id="notif-status"></div>
-      <form id="notif-form" onsubmit="sendNotification(event)">
+      <form id="notif-form">
         <div class="form-group">
           <label for="notif-message">Message</label>
           <input type="text" id="notif-message" placeholder="e.g. Evacuate Building" maxlength="500">
@@ -95,7 +96,7 @@
         </div>
         <div class="form-actions">
           <button type="submit" class="btn btn-danger">Send Notification</button>
-          <button type="button" class="btn btn-outline" onclick="clearNotification()">Clear</button>
+          <button type="button" id="btn-clear-notif" class="btn btn-outline">Clear</button>
         </div>
       </form>
       <div id="notif-preview" class="notification-preview" style="display:none"></div>
@@ -104,7 +105,7 @@
     <div class="card">
       <div class="card-header">Live Embed Override</div>
       <div id="embed-status"></div>
-      <form id="embed-form" onsubmit="setEmbedOverride(event)">
+      <form id="embed-form">
         <div class="form-group">
           <label for="embed-url">URL to Display</label>
           <input type="url" id="embed-url" placeholder="https://example.com/dashboard">
@@ -112,7 +113,7 @@
         </div>
         <div class="form-actions">
           <button type="submit" class="btn btn-primary">Activate Embed</button>
-          <button type="button" class="btn btn-outline" onclick="clearEmbedOverride()">Deactivate</button>
+          <button type="button" id="btn-clear-embed" class="btn btn-outline">Deactivate</button>
         </div>
       </form>
     </div>
@@ -129,9 +130,35 @@
 <script src="../js/admin-auth.js"></script>
 <script src="../js/admin-dashboard.js"></script>
 <script>
-requireAdminAuth();
-setupLogoutButton();
-document.addEventListener('DOMContentLoaded', initDashboard);
+document.addEventListener('DOMContentLoaded', function() {
+  requireAdminAuth();
+  setupLogoutButton();
+  initDashboard();
+  
+  // Notification form handler
+  var notifForm = document.getElementById('notif-form');
+  if (notifForm) {
+    notifForm.addEventListener('submit', sendNotification);
+  }
+  
+  // Notification clear button
+  var btnClearNotif = document.getElementById('btn-clear-notif');
+  if (btnClearNotif) {
+    btnClearNotif.addEventListener('click', clearNotification);
+  }
+  
+  // Embed form handler
+  var embedForm = document.getElementById('embed-form');
+  if (embedForm) {
+    embedForm.addEventListener('submit', setEmbedOverride);
+  }
+  
+  // Embed clear button
+  var btnClearEmbed = document.getElementById('btn-clear-embed');
+  if (btnClearEmbed) {
+    btnClearEmbed.addEventListener('click', clearEmbedOverride);
+  }
+});
 </script>
 </body>
 </html>
