@@ -4,7 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin Login — Digital Signage</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔐</text></svg>">
 <link rel="stylesheet" href="../css/style.css">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://*.firebaseio.com https://*.googleapis.com https://www.gstatic.com; style-src 'self' 'unsafe-inline'; frame-src *; connect-src 'self' https://*.firebaseio.com https://*.googleapis.com https://*.gstatic.com https://identitytoolkit.googleapis.com; img-src 'self' data:;">
 <style>
   .login-container {
     min-height: 100vh;
@@ -54,7 +56,7 @@
     <h1>Admin Login</h1>
     <p class="subtitle">Digital Signage System</p>
     <div id="status-area"></div>
-    <form onsubmit="handleLogin(event)">
+    <form id="login-form">
       <div class="form-group">
         <label for="login-email">Email</label>
         <input type="email" id="login-email" placeholder="admin@yoursite.com" autocomplete="email" required>
@@ -78,6 +80,15 @@
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
 <script src="../js/config.js"></script>
 <script src="../js/firebase-init.js"></script>
+<script src="../js/admin-auth.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var loginForm = document.getElementById('login-form');
+  if (loginForm) {
+    loginForm.addEventListener('submit', handleLogin);
+  }
+});
+</script>
 <script src="../js/app.js"></script>
 <script>
 function setStatus(msg, type) {
