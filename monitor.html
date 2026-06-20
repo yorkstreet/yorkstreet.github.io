@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Digital Signage Display</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📺</text></svg>">
 <link rel="stylesheet" href="css/style.css">
 <link rel="stylesheet" href="css/monitor.css">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://*.firebaseio.com https://*.googleapis.com https://www.gstatic.com; style-src 'self' 'unsafe-inline'; frame-src *; connect-src 'self' https://*.firebaseio.com https://*.googleapis.com https://*.gstatic.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com; img-src 'self' https://*.cloudinary.com data:; media-src 'self' https://*.cloudinary.com data:;">
@@ -14,7 +15,7 @@
     <h1>Display Setup</h1>
     <p>Enter a name for this display so the admin can identify it.</p>
     <input type="text" id="monitor-name-input" placeholder="e.g. Lobby TV" maxlength="50" autocomplete="off">
-    <button class="btn btn-primary" onclick="submitMonitorName()">Connect</button>
+    <button id="submit-monitor-btn" class="btn btn-primary">Connect</button>
     <p id="name-error" style="color:var(--color-danger);font-size:13px;margin-top:8px;display:none;"></p>
   </div>
 </div>
