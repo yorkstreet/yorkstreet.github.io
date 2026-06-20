@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Digital Signage Display</title>
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/monitor.css">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://*.firebaseio.com https://*.googleapis.com https://www.gstatic.com; style-src 'self' 'unsafe-inline'; frame-src *; connect-src 'self' https://*.firebaseio.com https://*.googleapis.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com; img-src 'self' https://*.cloudinary.com data:; media-src 'self' https://*.cloudinary.com data:;">
+</head>
+<body>
+<div id="name-modal" class="name-modal">
+  <div class="name-box">
+    <h1>Display Setup</h1>
+    <p>Enter a name for this display so the admin can identify it.</p>
+    <input type="text" id="monitor-name-input" placeholder="e.g. Lobby TV" maxlength="50" autocomplete="off">
+    <button class="btn btn-primary" onclick="submitMonitorName()">Connect</button>
+    <p id="name-error" style="color:var(--color-danger);font-size:13px;margin-top:8px;display:none;"></p>
+  </div>
+</div>
+
+<div id="monitor-container" class="monitor-container" style="display:none">
+  <div id="content-area" class="content-area">
+    <div id="loading-slide" class="empty-state" style="background:#111;color:#fff;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+      <div class="spinner" style="border-top-color:#fff;border-color:rgba(255,255,255,.2);"></div>
+      <p style="margin-top:12px;font-size:16px;color:rgba(255,255,255,.6);">Waiting for presentation...</p>
+    </div>
+  </div>
+
+  <div id="notification-bar" class="notification-bar" style="display:none;">
+    <div id="notif-message" class="notif-message"></div>
+    <div id="notif-timestamp" class="notif-timestamp"></div>
+  </div>
+
+  <div id="embed-fallback" class="embed-fallback" style="display:none;">
+    <div class="embed-icon">&#128279;</div>
+    <p>This site doesn't allow embedding.</p>
+    <a id="embed-fallback-link" href="#" target="_blank" rel="noopener">Open in new tab</a>
+  </div>
+
+  <div id="monitor-name-badge" class="monitor-name-badge"></div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+<script src="js/config.js"></script>
+<script src="js/firebase-init.js"></script>
+<script src="js/app.js"></script>
+<script src="js/monitor.js"></script>
+</body>
+</html>

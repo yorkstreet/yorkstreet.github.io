@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Digital Signage System</title>
+<link rel="stylesheet" href="css/style.css">
+<style>
+  .landing {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    text-align: center;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    color: #fff;
+  }
+  .landing h1 {
+    font-size: clamp(28px, 5vw, 48px);
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .landing .subtitle {
+    font-size: clamp(14px, 2vw, 18px);
+    opacity: .7;
+    margin-bottom: 40px;
+    max-width: 500px;
+  }
+  .landing .links {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .landing .links a {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 28px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: transform .15s, box-shadow .15s;
+    min-width: 180px;
+    justify-content: center;
+  }
+  .landing .links a:hover {
+    transform: translateY(-2px);
+    text-decoration: none;
+  }
+  .landing .links .btn-admin {
+    background: var(--color-primary);
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(26,115,232,.4);
+  }
+  .landing .links .btn-monitor {
+    background: rgba(255,255,255,.15);
+    color: #fff;
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,.2);
+  }
+  .landing .links .btn-monitor:hover {
+    background: rgba(255,255,255,.25);
+  }
+  .landing .footer-links {
+    margin-top: 40px;
+    font-size: 13px;
+    opacity: .5;
+  }
+  .landing .footer-links a {
+    color: rgba(255,255,255,.7);
+    text-decoration: underline;
+  }
+</style>
+</head>
+<body>
+<div class="landing">
+  <h1>Digital Signage</h1>
+  <p class="subtitle">Browser-based presentation system for multiple displays</p>
+  <div class="links">
+    <a href="admin/login.html" class="btn-admin">Admin Panel</a>
+    <a href="monitor.html" class="btn-monitor">Open Display</a>
+  </div>
+  <div class="footer-links">
+    <a href="init.html">First-time setup</a>
+  </div>
+</div>
+</body>
+</html>

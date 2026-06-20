@@ -1,0 +1,23 @@
+Cloudinary:
+Cloud Name: dyzjztnym
+Upload preset (unsinged): yorkstreet
+
+Firebase:
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyA0wpbp5zd3lS6KlW9NgPhP-n3CWa8GMyI",
+  authDomain: "yorkstreet-c3534.firebaseapp.com",
+  databaseURL: "https://yorkstreet-c3534-default-rtdb.firebaseio.com",
+  projectId: "yorkstreet-c3534",
+  storageBucket: "yorkstreet-c3534.firebasestorage.app",
+  messagingSenderId: "778677956830",
+  appId: "1:778677956830:web:c335545a1f9a3f7184d24f"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);

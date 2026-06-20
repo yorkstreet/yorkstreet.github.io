@@ -1,0 +1,42 @@
+{
+  "rtdb": {
+    "rules": {
+      ".read": true,
+      "control": {
+        ".read": true,
+        ".write": "auth != null && auth.token.admin === true",
+        "currentSlideIndex": {
+          ".validate": "newData.isNumber() && newData.val() >= 0"
+        },
+        "active": {
+          ".validate": "newData.isBoolean()"
+        },
+        "notification": {
+          ".validate": "newData.hasChildren(['active', 'message', 'bgColor', 'textColor', 'position', 'timestamp'])"
+        },
+        "embedOverride": {
+          ".validate": "newData.hasChildren(['active', 'url', 'timestamp'])"
+        }
+      },
+      "monitors": {
+        ".read": true,
+        "$uid": {
+          ".write": "auth != null && auth.uid === $uid",
+          ".validate": "newData.hasChildren(['name','status', 'lastSeen', 'token'])",
+          "name": { ".validate": "newData.isString() && newData.val().length > 0" },
+          "status": { ".validate": "newData.val() === 'online' || newData.val() === 'offline'" },
+          "lastSeen": { ".validate": "newData.isNumber()" },
+          "token": { ".validate": "newData.isString() && newData.val().length >= 8" }
+        }
+      }
+    }
+  },
+  "firestore": {
+    "rules": "rules_version = '2';\nservice cloud.firestore {\n  match /databases/{database}/documents {\n    // Admin-only collection (optional)\n    match /admin/{document} {\n      allow read, write: if request.auth != null && request.auth.token.admin == true;\n    }\n\n    // Media metadata stored here (actual files are on Cloudinary).\n    match /media/{document} {\n      allow read: if true;\n      allow write: if request.auth != null && request.auth.token.admin == true;\n    }\n\n    // Presentations: public read, admin write\n    match /presentations/{document} {\n      allow read: if true;\n      allow write: if request.auth != null && request.auth.token.admin == true;\n    }\n\n    // Monitor assignment docs: monitor can read its own doc; only admins can write assignments\n    match /monitors/{uid} {\n      allow read: if request.auth != null && (request.auth.uid == uid || request.auth.token.admin == true);\n      allow write: if request.auth != null && request.auth.token.admin == true;\n    }\n\n    match /{document=**} {\n      allow read: if false;\n      allow write: if false;\n    }\n  }\n}"
+  },
+  "notes": {
+    "rtdb": "Copy the 'rules' object into Firebase Console > Realtime Database > Rules",
+    "firestore": "Copy the 'rules' string into Firebase Console > Firestore Database > Rules",
+    "storage": "This project uses Cloudinary for file storage; Firebase Storage rules are not required on the free plan."
+  }
+}

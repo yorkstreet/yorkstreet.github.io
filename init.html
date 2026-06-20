@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Initialize System — Digital Signage</title>
+<link rel="stylesheet" href="css/style.css">
+<style>
+  .init-container {
+    max-width: 500px;
+    margin: 60px auto;
+    padding: 0 20px;
+  }
+  .init-container .card {
+    padding: 32px;
+  }
+  .init-container h1 {
+    font-size: 22px;
+    margin-bottom: 4px;
+  }
+  .init-container .subtitle {
+    color: var(--color-text-secondary);
+    font-size: 14px;
+    margin-bottom: 24px;
+  }
+  .init-container .step {
+    font-size: 13px;
+    color: var(--color-text-secondary);
+    margin-bottom: 16px;
+    padding: 8px 12px;
+    background: var(--color-hover);
+    border-radius: var(--radius-sm);
+  }
+  .init-container .setup-complete {
+    text-align: center;
+    padding: 20px;
+  }
+  .init-container .setup-complete .check {
+    font-size: 48px;
+    color: var(--color-success);
+    margin-bottom: 12px;
+  }
+  .init-container .password-hint {
+    font-size: 12px;
+    color: var(--color-text-secondary);
+    margin-top: 4px;
+  }
+</style>
+</head>
+<body>
+<div class="init-container">
+  <div class="card" id="setup-card">
+    <h1>System Setup</h1>
+    <p class="subtitle">Initialize Firebase schema and create admin account</p>
+    <div id="status-area"></div>
+    <div id="loading-area" class="empty-state" style="display:none">
+      <div class="spinner"></div>
+      <p>Checking setup status...</p>
+    </div>
+    <div id="setup-form" style="display:none">
+      <div class="step">Step 1: Create your admin Firebase Auth account. Use a real email you have access to.</div>
+      <div class="form-group">
+        <label for="admin-email">Admin Email</label>
+        <input type="email" id="admin-email" placeholder="admin@yoursite.com" autocomplete="email">
+      </div>
+      <div class="form-group">
+        <label for="admin-password">Admin Password</label>
+        <input type="password" id="admin-password" placeholder="Min 8 characters" autocomplete="new-password" minlength="8">
+        <div class="password-hint">At least 8 characters. Store this securely — you'll need it to log in.</div>
+      </div>
+      <div class="form-group">
+        <label for="admin-confirm">Confirm Password</label>
+        <input type="password" id="admin-confirm" placeholder="Re-enter password" autocomplete="new-password">
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-primary" id="btn-setup" onclick="runSetup()">Initialize System</button>
+      </div>
+    </div>
+    <div id="setup-done" style="display:none">
+      <div class="setup-complete">
+        <div class="check">&#10003;</div>
+        <h2>Setup Complete</h2>
+        <p style="color:var(--color-text-secondary);font-size:14px;margin-bottom:16px;">Your system is ready. You can now log in to the admin panel.</p>
+        <a href="admin/login.html" class="btn btn-primary" style="display:inline-flex">Go to Admin Login</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+<script src="js/config.js"></script>
+<script src="js/firebase-init.js"></script>
+<script src="js/app.js"></script>
+<script>
+let setupInProgress = false;
+
+async function sha256(str) {
+  const buf = new TextEncoder().encode(str);
+  const hash = await crypto.subtle.digest('SHA-256', buf);
+  return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+function setStatus(msg, type) {
+  const area = document.getElementById('status-area');
+  area.innerHTML = '<div class="alert alert-' + type + '">' + escapeHtml(msg) + '</div>';
+}
+
+function showLoading() {
+  document.getElementById('loading-area').style.display = 'block';
+  document.getElementById('setup-form').style.display = 'none';
+  document.getElementById('setup-done').style.display = 'none';
+  document.getElementById('status-area').innerHTML = '';
+}
+
+async function checkSetup() {
+  showLoading();
+  try {
+    const snapshot = await firestore.collection('admin').doc('credentials').get();
+    if (snapshot.exists) {
+      document.getElementById('loading-area').style.display = 'none';
+      document.getElementById('setup-done').style.display = 'block';
+    } else {
+      document.getElementById('loading-area').style.display = 'none';
+      document.getElementById('setup-form').style.display = 'block';
+    }
+  } catch (err) {
+    document.getElementById('loading-area').style.display = 'none';
+    document.getElementById('setup-form').style.display = 'block';
+    setStatus('Cannot connect to Firebase. Check your config.', 'error');
+  }
+}
+
+async function runSetup() {
+  if (setupInProgress) return;
+  const email = document.getElementById('admin-email').value.trim();
+  const password = document.getElementById('admin-password').value;
+  const confirm = document.getElementById('admin-confirm').value;
+
+  if (!email) { setStatus('Enter an email address.', 'error'); return; }
+  if (password.length < 8) { setStatus('Password must be at least 8 characters.', 'error'); return; }
+  if (password !== confirm) { setStatus('Passwords do not match.', 'error'); return; }
+
+  setupInProgress = true;
+  const btn = document.getElementById('btn-setup');
+  btn.disabled = true;
+  btn.textContent = 'Setting up...';
+  setStatus('', '');
+
+  try {
+    const userCred = await auth.createUserWithEmailAndPassword(email, password);
+    const uid = userCred.user.uid;
+    const hash = await sha256(password);
+    await firestore.collection('admin').doc('credentials').set({
+      email: email,
+      passwordHash: hash,
+      uid: uid,
+      createdAt: firebase.database.ServerValue.TIMESTAMP
+    });
+    const defaults = {
+      currentSlideIndex: 0,
+      currentPresentationId: '',
+      active: true,
+      notification: {
+        active: false,
+        message: '',
+        bgColor: '#d93025',
+        textColor: '#ffffff',
+        position: 'bottom',
+        timestamp: 0
+      },
+      embedOverride: {
+        active: false,
+        url: '',
+        timestamp: 0
+      }
+    };
+    await database.ref('control').update(defaults);
+    setStatus('System initialized successfully!', 'success');
+    setTimeout(() => {
+      document.getElementById('setup-form').style.display = 'none';
+      document.getElementById('setup-done').style.display = 'block';
+    }, 1000);
+  } catch (err) {
+    if (err.code === 'auth/email-already-in-use') {
+      setStatus('This email is already registered. The system may already be set up.', 'error');
+    } else {
+      setStatus('Error: ' + err.message, 'error');
+    }
+    btn.disabled = false;
+    btn.textContent = 'Initialize System';
+    setupInProgress = false;
+  }
+}
+
+checkSetup();
+</script>
+</body>
+</html>

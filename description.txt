@@ -1,0 +1,32 @@
+🖥️ HTML5 Presentation & Digital Signage System
+A browser-based presentation software that allows an admin to control content across multiple remote displays in real-time.
+
+Core Architecture
+Frontend: HTML5 static site hosted on GitHub Pages.
+Backend: No dedicated server; uses Firebase (Real-time Database and Firestore) for data and Cloudinary for media storage.
+Responsiveness: Must be mobile-friendly and desktop-compatible for both admin and display views.
+User Roles & Workflow
+1. Monitor / Display Side
+Access: Opens a specific URL in a browser.
+Identification: A modal pop-up asks for a "Monitor Name" upon entry. This name is sent to the admin dashboard for tracking.
+Functionality: Autoplays a sequence of videos and images based on the assigned presentation.
+Notifications: Displays real-time alerts that shrink the media content to show text bars (side and bottom) with custom colors and messages (e.g., "Evacuate Building").
+2. Admin Side
+Security: Password-protected page (password stored in and verified via Firebase).
+Media Management: Upload media to Cloudinary, then order them into specific sequences.
+Presentation Control:
+Create multiple presentations (e.g., Presentation 1 has media 1-3; Presentation 2 has media 4-5).
+Set a "Default Presentation" for new monitors.
+Assign specific presentations to specific named monitors.
+Notification Trigger: Send global alerts to all screens with customizable text and background colors.
+Technical Requirements
+Database Setup: Create a separate utility/external page to initialize the Firebase schema (paths for passwords, real-time nodes, and Firestore collections) with default values.
+UI/UX: Must be extremely simple and intuitive for non-technical users.
+Real-time Updates: Use Firebase Real-time Database to ensure monitors update immediately when the admin changes a slide or sends a notification.
+Action Items
+Develop the static HTML5 site structure.
+Integrate Firebase for real-time control and password authentication.
+Integrate Cloudinary for media hosting.
+Build the "Initialization Page" to set up Firebase pathways.
+Design the notification overlay UI (shrink-to-fit ratio).
+Ensure mobile responsiveness for the admin dashboard.
