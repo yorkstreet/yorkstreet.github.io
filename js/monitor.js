@@ -12,6 +12,14 @@ var monitorRTDBRef = null;
 var currentPresentationId = '';
 var assignedPresentationId = null;
 
+// Set up event listener for submit button
+document.addEventListener('DOMContentLoaded', function() {
+  var submitBtn = document.getElementById('submit-monitor-btn');
+  if (submitBtn) {
+    submitBtn.addEventListener('click', submitMonitorName);
+  }
+});
+
 function init() {
   var saved = localStorage.getItem('ys_monitor_name');
   var savedToken = localStorage.getItem('ys_monitor_token');
