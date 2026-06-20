@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard — Digital Signage</title>
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/admin.css">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://*.firebaseio.com https://*.googleapis.com https://*.cloudinary.com https://www.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; frame-src *; connect-src 'self' https://*.firebaseio.com https://*.googleapis.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com; img-src 'self' https://*.cloudinary.com data:;">
+</head>
+<body>
+<div class="admin-layout">
+  <aside class="sidebar">
+    <div class="sidebar-logo">Digital Signage</div>
+    <nav>
+      <a href="dashboard.html" class="active"><span>Dashboard</span></a>
+      <a href="media.html"><span>Media</span></a>
+      <a href="presentations.html"><span>Presentations</span></a>
+      <a href="monitors.html"><span>Monitors</span></a>
+    </nav>
+    <div class="sidebar-spacer"></div>
+    <div class="sidebar-footer">
+      <button id="logout-btn"><span>Logout</span></button>
+    </div>
+  </aside>
+  <main class="admin-main">
+    <h1>Dashboard</h1>
+    <div class="stats-grid" id="stats-grid">
+      <div class="stat-card">
+        <div class="stat-value" id="stat-monitors-online">0</div>
+        <div class="stat-label">Monitors Online</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="stat-monitors-total">0</div>
+        <div class="stat-label">Total Monitors</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="stat-presentations">0</div>
+        <div class="stat-label">Presentations</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="stat-slides-total">0</div>
+        <div class="stat-label">Total Slides</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">Presentation Controls</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="btn btn-outline btn-sm" id="btn-prev-slide">&#9664; Previous Slide</button>
+        <button class="btn btn-outline btn-sm" id="btn-next-slide">Next Slide &#9654;</button>
+        <button class="btn btn-outline btn-sm" id="btn-toggle-play">Pause</button>
+      </div>
+      <div style="margin-top:8px;font-size:13px;color:var(--color-text-secondary);">
+        Active Presentation: <span id="active-pres-name">None</span>
+        &middot; Slide: <span id="active-slide-info">0 / 0</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">Connected Monitors</div>
+      <div id="monitor-list-area">
+        <div class="empty-state"><p>No monitors connected yet.</p></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">Send Notification</div>
+      <div id="notif-status"></div>
+      <form id="notif-form" onsubmit="sendNotification(event)">
+        <div class="form-group">
+          <label for="notif-message">Message</label>
+          <input type="text" id="notif-message" placeholder="e.g. Evacuate Building" maxlength="500">
+        </div>
+        <div class="form-group">
+          <label>Background Color</label>
+          <div class="color-picker-row">
+            <input type="color" id="notif-bg" value="#d93025">
+            <span id="notif-bg-label">#d93025</span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Text Color</label>
+          <div class="color-picker-row">
+            <input type="color" id="notif-text" value="#ffffff">
+            <span id="notif-text-label">#ffffff</span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="notif-position">Position</label>
+          <select id="notif-position">
+            <option value="bottom">Bottom Bar</option>
+            <option value="side">Side Bar</option>
+          </select>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn btn-danger">Send Notification</button>
+          <button type="button" class="btn btn-outline" onclick="clearNotification()">Clear</button>
+        </div>
+      </form>
+      <div id="notif-preview" class="notification-preview" style="display:none"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">Live Embed Override</div>
+      <div id="embed-status"></div>
+      <form id="embed-form" onsubmit="setEmbedOverride(event)">
+        <div class="form-group">
+          <label for="embed-url">URL to Display</label>
+          <input type="url" id="embed-url" placeholder="https://example.com/dashboard">
+          <div style="font-size:12px;color:var(--color-text-secondary);margin-top:4px;">All monitors will show this page instead of the presentation. Some sites block embedding and will show a fallback link.</div>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">Activate Embed</button>
+          <button type="button" class="btn btn-outline" onclick="clearEmbedOverride()">Deactivate</button>
+        </div>
+      </form>
+    </div>
+  </main>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+<script src="../js/config.js"></script>
+<script src="../js/firebase-init.js"></script>
+<script src="../js/app.js"></script>
+<script src="../js/admin-auth.js"></script>
+<script src="../js/admin-dashboard.js"></script>
+<script>
+requireAdminAuth();
+setupLogoutButton();
+document.addEventListener('DOMContentLoaded', initDashboard);
+</script>
+</body>
+</html>

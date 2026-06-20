@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Login — Digital Signage</title>
+<link rel="stylesheet" href="../css/style.css">
+<style>
+  .login-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-bg);
+    padding: 20px;
+  }
+  .login-box {
+    background: var(--color-surface);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-lg);
+    padding: 40px;
+    max-width: 400px;
+    width: 100%;
+  }
+  .login-box h1 {
+    font-size: 24px;
+    margin-bottom: 4px;
+    text-align: center;
+  }
+  .login-box .subtitle {
+    text-align: center;
+    color: var(--color-text-secondary);
+    font-size: 14px;
+    margin-bottom: 28px;
+  }
+  .login-box .form-actions {
+    flex-direction: column;
+  }
+  .login-box .btn {
+    width: 100%;
+    justify-content: center;
+    padding: 12px;
+  }
+  .login-box .setup-link {
+    text-align: center;
+    margin-top: 16px;
+    font-size: 13px;
+  }
+</style>
+</head>
+<body>
+<div class="login-container">
+  <div class="login-box">
+    <h1>Admin Login</h1>
+    <p class="subtitle">Digital Signage System</p>
+    <div id="status-area"></div>
+    <form onsubmit="handleLogin(event)">
+      <div class="form-group">
+        <label for="login-email">Email</label>
+        <input type="email" id="login-email" placeholder="admin@yoursite.com" autocomplete="email" required>
+      </div>
+      <div class="form-group">
+        <label for="login-password">Password</label>
+        <input type="password" id="login-password" placeholder="Enter password" autocomplete="current-password" required>
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary" id="login-btn">Sign In</button>
+      </div>
+    </form>
+    <div class="setup-link">
+      <a href="../init.html">First-time setup</a>
+    </div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+<script src="../js/config.js"></script>
+<script src="../js/firebase-init.js"></script>
+<script src="../js/app.js"></script>
+<script>
+function setStatus(msg, type) {
+  document.getElementById('status-area').innerHTML = '<div class="alert alert-' + type + '">' + escapeHtml(msg) + '</div>';
+}
+
+auth.onAuthStateChanged(function(user) {
+  if (user && user.email) {
+    window.location.href = 'dashboard.html';
+  }
+});
+
+async function handleLogin(e) {
+  e.preventDefault();
+  const email = document.getElementById('login-email').value.trim();
+  const password = document.getElementById('login-password').value;
+  const btn = document.getElementById('login-btn');
+  btn.disabled = true;
+  btn.textContent = 'Signing in...';
+  setStatus('', '');
+
+  try {
+    await auth.signInWithEmailAndPassword(email, password);
+    window.location.href = 'dashboard.html';
+  } catch (err) {
+    if (err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') {
+      setStatus('Invalid email or password.', 'error');
+    } else if (err.code === 'auth/too-many-requests') {
+      setStatus('Too many attempts. Try again later.', 'error');
+    } else {
+      setStatus('Login failed: ' + err.message, 'error');
+    }
+    btn.disabled = false;
+    btn.textContent = 'Sign In';
+  }
+}
+</script>
+</body>
+</html>

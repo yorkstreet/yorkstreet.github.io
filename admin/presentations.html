@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Presentations — Digital Signage</title>
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/admin.css">
+</head>
+<body>
+<div class="admin-layout">
+  <aside class="sidebar">
+    <div class="sidebar-logo">Digital Signage</div>
+    <nav>
+      <a href="dashboard.html"><span>Dashboard</span></a>
+      <a href="media.html"><span>Media</span></a>
+      <a href="presentations.html" class="active"><span>Presentations</span></a>
+      <a href="monitors.html"><span>Monitors</span></a>
+    </nav>
+    <div class="sidebar-spacer"></div>
+    <div class="sidebar-footer">
+      <button id="logout-btn"><span>Logout</span></button>
+    </div>
+  </aside>
+  <main class="admin-main">
+    <h1>Presentations</h1>
+    <div id="status-area"></div>
+
+    <div class="card">
+      <div class="card-header">Create New Presentation</div>
+      <form id="create-pres-form" onsubmit="createPresentation(event)">
+        <div class="form-group">
+          <label for="new-pres-name">Presentation Name</label>
+          <input type="text" id="new-pres-name" placeholder="e.g. Lobby Slideshow" required>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">Create</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="card">
+      <div class="card-header">All Presentations</div>
+      <div id="pres-list-area">
+        <div class="empty-state"><div class="spinner"></div><p>Loading...</p></div>
+      </div>
+    </div>
+
+    <div id="edit-modal" class="modal-overlay" style="display:none">
+      <div class="modal" style="max-width:600px">
+        <h2 id="edit-modal-title">Edit Presentation</h2>
+        <div id="edit-status"></div>
+        <input type="hidden" id="edit-pres-id">
+        <div class="form-group">
+          <label for="edit-pres-name">Name</label>
+          <input type="text" id="edit-pres-name">
+        </div>
+        <div class="form-group">
+          <label>Slides</label>
+          <div id="edit-slides-list" class="slide-list"></div>
+          <div class="add-slide-bar">
+            <button type="button" class="btn btn-outline btn-sm" onclick="addImageSlide()">+ Add Image</button>
+            <button type="button" class="btn btn-outline btn-sm" onclick="addVideoSlide()">+ Add Video</button>
+            <button type="button" class="btn btn-outline btn-sm" onclick="addEmbedSlide()">+ Add Embed</button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="checkbox-label" style="display:flex;align-items:center;gap:8px;font-weight:500;font-size:14px;color:var(--color-text-secondary);">
+            <input type="checkbox" id="edit-is-default"> Set as default for new monitors
+          </label>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn btn-primary" onclick="savePresentation()">Save</button>
+          <button type="button" class="btn btn-outline" onclick="closeEditModal()">Cancel</button>
+          <button type="button" class="btn btn-danger" onclick="deletePresentation()" style="margin-left:auto;">Delete</button>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+<script src="../js/config.js"></script>
+<script src="../js/firebase-init.js"></script>
+<script src="../js/app.js"></script>
+<script src="../js/admin-auth.js"></script>
+<script src="../js/admin-presentations.js"></script>
+<script>
+requireAdminAuth();
+setupLogoutButton();
+document.addEventListener('DOMContentLoaded', loadPresentations);
+</script>
+</body>
+</html>

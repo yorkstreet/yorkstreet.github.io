@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Monitors — Digital Signage</title>
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/admin.css">
+</head>
+<body>
+<div class="admin-layout">
+  <aside class="sidebar">
+    <div class="sidebar-logo">Digital Signage</div>
+    <nav>
+      <a href="dashboard.html"><span>Dashboard</span></a>
+      <a href="media.html"><span>Media</span></a>
+      <a href="presentations.html"><span>Presentations</span></a>
+      <a href="monitors.html" class="active"><span>Monitors</span></a>
+    </nav>
+    <div class="sidebar-spacer"></div>
+    <div class="sidebar-footer">
+      <button id="logout-btn"><span>Logout</span></button>
+    </div>
+  </aside>
+  <main class="admin-main">
+    <h1>Monitor Management</h1>
+    <div id="status-area"></div>
+
+    <div class="card">
+      <div class="card-header">Connected Monitors</div>
+      <p style="font-size:14px;color:var(--color-text-secondary);margin-bottom:12px;">Monitors appear here when they open the display URL. Assign a specific presentation to each monitor, or they will use the default.</p>
+      <div id="monitors-table-area">
+        <div class="empty-state"><div class="spinner"></div><p>Loading monitors...</p></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+<script src="../js/config.js"></script>
+<script src="../js/firebase-init.js"></script>
+<script src="../js/app.js"></script>
+<script src="../js/admin-auth.js"></script>
+<script src="../js/admin-monitors.js"></script>
+<script>
+requireAdminAuth();
+setupLogoutButton();
+document.addEventListener('DOMContentLoaded', initMonitors);
+</script>
+</body>
+</html>
